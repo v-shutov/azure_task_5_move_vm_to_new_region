@@ -2,24 +2,6 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "extensions_enablevmAccess_username": {
-      "type": "SecureString"
-    },
-    "extensions_enablevmAccess_password": {
-      "type": "SecureString"
-    },
-    "extensions_enablevmAccess_ssh_key": {
-      "type": "SecureString"
-    },
-    "extensions_enablevmAccess_reset_ssh": {
-      "type": "SecureString"
-    },
-    "extensions_enablevmAccess_remove_user": {
-      "type": "SecureString"
-    },
-    "extensions_enablevmAccess_expiration": {
-      "type": "SecureString"
-    },
     "virtualMachines_linux_box_name": {
       "type": "String"
     },
@@ -42,7 +24,7 @@
       "type": "Microsoft.Network/networkSecurityGroups",
       "apiVersion": "2023-09-01",
       "name": "[parameters('networkSecurityGroups_linux_box_nsg_name')]",
-      "location": "uksouth",
+      "location": "ukwest",
       "properties": {
         "securityRules": [
           {
@@ -90,36 +72,36 @@
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2023-09-01",
       "name": "[parameters('publicIPAddresses_linux_box_ip_name')]",
-      "location": "uksouth",
+      "location": "ukwest",
       "sku": {
         "name": "Basic",
         "tier": "Regional"
       },
       "properties": {
-        "ipAddress": "51.140.81.66",
+        "ipAddress": "20.162.105.204",
         "publicIPAddressVersion": "IPv4",
         "publicIPAllocationMethod": "Dynamic",
         "idleTimeoutInMinutes": 4,
         "dnsSettings": {
           "domainNameLabel": "id21782-mate-box",
-          "fqdn": "id21782-mate-box.uksouth.cloudapp.azure.com"
+          "fqdn": "id21782-mate-box.ukwest.cloudapp.azure.com"
         },
-        "ipTags": [],
-        "ddosSettings": {
-          "protectionMode": "VirtualNetworkInherited"
-        }
+        "ipTags": []
       }
     },
     {
       "type": "Microsoft.Network/virtualNetworks",
       "apiVersion": "2023-09-01",
       "name": "[parameters('virtualNetworks_linux_box_vnet_name')]",
-      "location": "uksouth",
+      "location": "ukwest",
       "properties": {
         "addressSpace": {
           "addressPrefixes": [
             "10.0.0.0/16"
           ]
+        },
+        "dhcpOptions": {
+          "dnsServers": []
         },
         "subnets": [
           {
@@ -142,7 +124,7 @@
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2023-03-01",
       "name": "[parameters('virtualMachines_linux_box_name')]",
-      "location": "uksouth",
+      "location": "ukwest",
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_linux_box136_name'))]"
       ],
@@ -150,26 +132,17 @@
         "hardwareProfile": {
           "vmSize": "Standard_B1s"
         },
-        "additionalCapabilities": {
-          "hibernationEnabled": false
-        },
         "storageProfile": {
-          "imageReference": {
-            "publisher": "canonical",
-            "offer": "0001-com-ubuntu-server-jammy",
-            "sku": "22_04-lts-gen2",
-            "version": "latest"
-          },
           "osDisk": {
             "osType": "Linux",
             "name": "[concat(parameters('virtualMachines_linux_box_name'), '_OsDisk_1_3e5db49a506849aa8c5a57f24cd45b04')]",
-            "createOption": "FromImage",
+            "createOption": "Attach",
             "caching": "ReadWrite",
             "managedDisk": {
               "storageAccountType": "Premium_LRS",
               "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('virtualMachines_linux_box_name'), '_OsDisk_1_3e5db49a506849aa8c5a57f24cd45b04'))]"
             },
-            "deleteOption": "Delete",
+            "deleteOption": "Detach",
             "diskSizeGB": 30
           },
           "dataDisks": [
@@ -178,7 +151,6 @@
               "name": "[concat(parameters('virtualMachines_linux_box_name'), '-data-disk-1')]",
               "createOption": "Attach",
               "caching": "None",
-              "writeAcceleratorEnabled": false,
               "managedDisk": {
                 "storageAccountType": "Premium_LRS",
                 "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('virtualMachines_linux_box_name'), '-data-disk-1'))]"
@@ -190,72 +162,15 @@
           ],
           "diskControllerType": "SCSI"
         },
-        "osProfile": {
-          "computerName": "[parameters('virtualMachines_linux_box_name')]",
-          "adminUsername": "id27182",
-          "linuxConfiguration": {
-            "disablePasswordAuthentication": true,
-            "ssh": {
-              "publicKeys": [
-                {
-                  "path": "/home/id27182/.ssh/authorized_keys",
-                  "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCw+Jbda65kLQy9sH7w8KHV0c9bxtqkhISQsybp2EyoGjkRftyJslUCwMxreOTcFgVWc28tQObrH+0IdLD0i2i6HbtBD+TeklZ1k1MFR9Os2qLalef1xMoe+q7QQXiDXVnCwT0Sejw/7InU+GYSCd70IoKT3PDJlrl8i40UYoqVkKmj98QQual0/pnHwDxu8GXvWfzF3G74jXWInhXkLu6iwK9xoJXVYkQzCI5dVZGG1K/vgoTim3LVwAXZ4/3YzxX/8x3KlYi7UyrUjQ43VwWqAs1ejzH/81QUIsUkDvQK/2x1dvVYQONzOJQd2NtrIEmYqgi3Cs9037vMRcQH9f4oLoqph7F7meVeUlniSPkkUoCm1GrtEDgLKjTLQQZ0bPdNIbp3bYo6bKJuidax/D700x0hE4wzdh7p4oyN0AM9rGRvNo7QZOKvuEXS4UyLhuxBSl57WAycXm4vBkf+5l8ACTs+7uO937hVLkyAgZAOPCCqNIgf0AlrFvt7wQq2QFk= bmatei@softserveinc.com"
-                }
-              ]
-            },
-            "provisionVMAgent": true,
-            "patchSettings": {
-              "patchMode": "AutomaticByPlatform",
-              "automaticByPlatformSettings": {
-                "rebootSetting": "IfRequired",
-                "bypassPlatformSafetyChecksOnUserSchedule": false
-              },
-              "assessmentMode": "ImageDefault"
-            },
-            "enableVMAgentPlatformUpdates": false
-          },
-          "secrets": [],
-          "allowExtensionOperations": true,
-          "requireGuestProvisionSignal": true
-        },
         "networkProfile": {
           "networkInterfaces": [
             {
               "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_linux_box136_name'))]",
               "properties": {
-                "deleteOption": "Detach"
+                "primary": true
               }
             }
           ]
-        },
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true
-          }
-        }
-      }
-    },
-    {
-      "type": "Microsoft.Compute/virtualMachines/extensions",
-      "apiVersion": "2023-03-01",
-      "name": "[concat(parameters('virtualMachines_linux_box_name'), '/enablevmAccess')]",
-      "location": "uksouth",
-      "dependsOn": [
-        "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachines_linux_box_name'))]"
-      ],
-      "properties": {
-        "autoUpgradeMinorVersion": true,
-        "publisher": "Microsoft.OSTCExtensions",
-        "type": "VMAccessForLinux",
-        "typeHandlerVersion": "1.5",
-        "settings": {},
-        "protectedSettings": {
-          "username": "[parameters('extensions_enablevmAccess_username')]",
-          "password": "[parameters('extensions_enablevmAccess_password')]",
-          "ssh_key": "[parameters('extensions_enablevmAccess_ssh_key')]",
-          "reset_ssh": "[parameters('extensions_enablevmAccess_reset_ssh')]",
-          "remove_user": "[parameters('extensions_enablevmAccess_remove_user')]",
-          "expiration": "[parameters('extensions_enablevmAccess_expiration')]"
         }
       }
     },
@@ -321,7 +236,7 @@
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2023-09-01",
       "name": "[parameters('networkInterfaces_linux_box136_name')]",
-      "location": "uksouth",
+      "location": "ukwest",
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_linux_box_ip_name'))]",
         "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_linux_box_vnet_name'), 'default')]",
@@ -333,7 +248,7 @@
           {
             "name": "ipconfig1",
             "id": "[concat(resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_linux_box136_name')), '/ipConfigurations/ipconfig1')]",
-            "etag": "W/\"8fceb271-58c3-4379-a330-c1df753a81e7\"",
+            "etag": "W/\"3473010a-2692-4857-9510-427ddff01d71\"",
             "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
             "properties": {
               "provisioningState": "Succeeded",

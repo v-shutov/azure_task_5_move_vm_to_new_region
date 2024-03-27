@@ -130,13 +130,12 @@ if ($sshNsgRule)  {
     throw "Unable to fing network security group rule which allows HTTP connection. Please check if you configured VM Network Security Group to allow connections on 8080 TCP port and try again."
 }
 
-# $mobilityAgentExtention = ( $TemplateObject.resources | Where-Object {($_.type -eq "Microsoft.Compute/virtualMachines/extensions") -and ($_.name.Contains("SiteRecovery-Linux")) } ) 
-# if ($mobilityAgentExtention) {
-#     Write-Output "`u{2705} Checked if VM admin password was reset - OK"
-# } else {
-#     Write-Output `u{1F914}
-#     throw "Unable to verify that VM admin password was ever reset on the virtual machine. Please reset VM admin password and try again. "
-# }
+$response = (Invoke-WebRequest -Uri "http://$($pip.properties.dnsSettings.fqdn):8080/api/" -ErrorAction SilentlyContinue) 
+if ($response) { 
+    Write-Output "`u{2705} Checked if the web application is running - OK"
+} else {
+    throw "Unable to get a reponse from the web app. Please make sure that the VM and web application are running and try again."
+}
 
 Write-Output ""
 Write-Output "`u{1F973} Congratulations! All tests passed!"

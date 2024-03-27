@@ -73,7 +73,9 @@ In this task, you will need to work with the infrastructure from the previous ta
 
 4. Sumbit the solution for a review
 
-5. When solution is validated, stop the virtual machine. 
+5. When solution is validated, stop the virtual machine and delete the source resource group. 
+
+Note: source resources are not deleted automatically - you need to do it on our own. 
 
 ## Note
 
