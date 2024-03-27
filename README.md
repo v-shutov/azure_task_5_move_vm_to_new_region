@@ -1,0 +1,1 @@
+# azure_task_5_move_vm_to_new_region
