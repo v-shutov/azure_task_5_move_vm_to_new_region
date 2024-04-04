@@ -61,7 +61,7 @@ In this task, you will need to work with the infrastructure from the previous ta
 
 1. Use [Azure Resource Mover](https://learn.microsoft.com/en-us/azure/resource-mover/tutorial-move-region-virtual-machines) to move your resources: 
     
-    - use 'UK West' as a target region
+    - use 'UK West' as a target region. If your VM size is not available in the 'UK West' Azure region - select any other Azure region where it is available. 
 
     - make sure that all resources will be moved in the new resource group, called `mate-azure-task-5` (you need to create it before ititiating the movement). 
 
@@ -95,7 +95,7 @@ On the prepare page, Azure resource mover installs to your VM a program, called 
 
     - Identify the necessary packages that you need to install. This is done by executing the following command:
     ```
-        sudo apt search linux-azure | grep 5.4.0-1062
+        sudo apt search linux-azure | grep 6.5.0-1015-azure
     ```
 
     - Install packages, which you got at the previous step using apt-get. For example: 
