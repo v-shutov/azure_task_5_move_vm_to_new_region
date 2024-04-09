@@ -75,6 +75,8 @@ In this task, you will need to work with the infrastructure from the previous ta
 
 5. When solution is validated, stop the virtual machine and delete the source resource group. 
 
+6. Also, stop the VM you moved to the new region if you are not using it (but don't delete it - you will need it for the next tasks). 
+
 Note: source resources are not deleted automatically - you need to do it on our own. 
 
 ## Note
