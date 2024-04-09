@@ -63,7 +63,7 @@ In this task, you will need to work with the infrastructure from the previous ta
     
     - use 'UK West' as a target region. If your VM size is not available in the 'UK West' Azure region - select any other Azure region where it is available. 
 
-    - make sure that all resources will be moved in the new resource group, called `mate-azure-task-5` (you need to create it before ititiating the movement). 
+    - make sure that all resources will be moved in the new resource group, called `mate-azure-task-5`. For that, create the target resource group before any other steps, and adjust the configuration of each resource in the Azure Resource Mover before ititiating the Prepare stage. 
 
     - after you moved the resources, check if your web app is still available on the Internet 
 
