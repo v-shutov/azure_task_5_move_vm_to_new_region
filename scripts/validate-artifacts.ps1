@@ -123,7 +123,7 @@ if ($sshNsgRule)  {
 }
 
 $httpNsgRule = ( $nsg.properties.securityRules | Where-Object { ($_.properties.destinationPortRange -eq '8080') -and ($_.properties.access -eq 'Allow')} ) 
-if ($sshNsgRule)  {
+if ($httpNsgRule)  {
     Write-Output "`u{2705} Checked if NSG has HTTP network security rule configured - OK"
 } else { 
     Write-Output `u{1F914}
